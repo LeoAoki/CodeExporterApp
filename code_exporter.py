@@ -33,40 +33,44 @@ def generate_directory_tree(project_dirs, ignored_dirs):
         tree.append("")
     return '\n'.join(tree)
 
-# Função para verificar se um arquivo está dentro de algum dos diretórios do projeto
-def is_file_within_project(file_path, project_dirs):
+# Função para resolver o caminho absoluto do arquivo
+def resolve_file_path(file_path, project_dirs):
     for project_dir in project_dirs:
-        if os.path.commonpath([file_path, project_dir]) == os.path.normpath(project_dir):
-            relative_path = os.path.relpath(file_path, start=os.path.dirname(project_dir))
-            return True, relative_path
-    return False, None
+        project_name = os.path.basename(os.path.normpath(project_dir))
+        if file_path.startswith(project_name):
+            relative_path = file_path[len(project_name)+1:]
+            absolute_path = os.path.join(project_dir, relative_path)
+            if os.path.exists(absolute_path):
+                return absolute_path, project_name
+    raise ValueError(f"O arquivo {file_path} não foi encontrado em nenhum dos projetos especificados.")
 
-# Função para ler e exportar arquivos escolhidos, exibindo caminho relativo ao projeto
+# Função para ler e exportar arquivos escolhidos
 def export_files(file_paths, project_dirs):
     exported_content = []
+    
     for file_path in file_paths:
-        file_path = os.path.normpath(file_path)
-        valid, relative_path = is_file_within_project(file_path, project_dirs)
-        
-        if not valid:
-            raise ValueError(f"Erro: O arquivo {file_path} não está dentro de nenhum dos diretórios do projeto.")
-
         try:
-            with open(file_path, 'r', encoding='utf-8') as file:
+            absolute_file_path, project_name = resolve_file_path(file_path, project_dirs)
+            
+            with open(absolute_file_path, 'r', encoding='utf-8') as file:
                 content = file.read()
-            exported_content.append(f"• {relative_path}\n\n{content}\n")
-        except Exception as e:
-            exported_content.append(f"• {relative_path}\n\nError reading file: {e}\n")
+            
+            exported_content.append(f"• {file_path}:\n\n{content}\n")
+        
+        except ValueError as e:
+            exported_content.append(f"• Erro: {e}\n")
+    
     return '\n'.join(exported_content)
 
 # Função principal que gera o TXT com a árvore e os arquivos exportados
 def create_export(project_dirs, file_paths, ignored_dirs, output_file="project_export.txt"):
-
     tree = generate_directory_tree(project_dirs, ignored_dirs)
-
-    file_content = export_files(file_paths, project_dirs)
-
-    export_text = f"****** Projetos: ******\n\n{tree}\n****** Arquivos exportados: ******\n\n{file_content}"
+    
+    if file_paths:
+        file_content = export_files(file_paths, project_dirs)
+        export_text = f"{tree}\n****** Arquivos exportados: ******\n\n{file_content}"
+    else:
+        export_text = f"{tree}\n****** Nenhum arquivo exportado. ******\n"
 
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(export_text)
@@ -81,15 +85,13 @@ def load_config(config_file="config.json"):
                 config = json.load(f)
 
             if 'projects' not in config or not isinstance(config['projects'], list) or len(config['projects']) == 0:
-                raise ValueError("O arquivo config.json deve conter uma lista de diretórios na chave 'projects'.")
+                raise ValueError("O arquivo config.json deve conter ao menos um diretório na chave 'projects'.")
             
-            if 'files' not in config or not isinstance(config['files'], list) or len(config['files']) == 0:
-                raise ValueError("O arquivo config.json deve conter uma lista de arquivos na chave 'files'.")
-            
-            # Se a chave 'ignored_dirs' não estiver presente, usa a lista padrão
+            file_paths = config.get('files', [])
+
             ignored_dirs = config.get('ignored_dirs', DEFAULT_IGNORED_DIRS)
             
-            return config['projects'], config['files'], ignored_dirs
+            return config['projects'], file_paths, ignored_dirs
         
         except json.JSONDecodeError:
             raise ValueError("Erro ao analisar o arquivo config.json. Verifique se ele está formatado corretamente.")

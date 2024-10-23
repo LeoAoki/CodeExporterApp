@@ -4,10 +4,10 @@
         "C:/pessoal/meu_projeto2"
     ],
     "files": [
-        "C:/dev/meu_projeto1/Controllers/UsuarioController.cs",
-        "C:/dev/meu_projeto1/Models/UsuarioModel.cs",
-        "C:/pessoal/meu_projeto2/src/components/Tabela/TabelaComponent.tsx",
-        "C:/pessoal/meu_projeto2/src/components/Tabela/TabelaComponent.scss"
+        "meu_projeto1/Controllers/UsuarioController.cs",
+        "meu_projeto1/Models/UsuarioModel.cs",
+        "meu_projeto2/src/components/Tabela/TabelaComponent.tsx",
+        "meu_projeto2/src/components/Tabela/TabelaComponent.scss"
     ],
     "ignored_dirs": [
         ".git",

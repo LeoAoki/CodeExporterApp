@@ -4,9 +4,9 @@
 
 ## Motivação
 
-Este projeto foi criado com o objetivo de simplificar a exportação das **estruturas de projetos** e o **conteúdo de arquivos** para situações onde você precisa fornecer contexto para IAs ou outros desenvolvedores ao tirar dúvidas sobre um projeto. Muitas vezes, é necessário compartilhar a estrutura completa de pastas de um projeto, juntamente com o conteúdo de arquivos específicos, de maneira organizada. O CodeExporterApp resolve esse problema, criando automaticamente um arquivo de texto `project_export.txt` com:
+Este projeto foi criado com o objetivo de simplificar a exportação das **estruturas de projetos** e o **conteúdo de arquivos** para situações onde você precisa fornecer contexto para IAs ou outros desenvolvedores ao tirar dúvidas sobre um projeto. Muitas vezes, é necessário compartilhar a estrutura completa de pastas de um projeto, juntamente com o conteúdo de arquivos específicos, de maneira organizada. O **CodeExporterApp** resolve esse problema, criando automaticamente um arquivo de texto `project_export.txt` com:
 - Árvores de diretórios de um ou mais projetos.
-- O conteúdo de arquivos específicos, organizados com seus respectivos caminhos.
+- O conteúdo de arquivos específicos, organizados com seus respectivos caminhos (caso haja arquivos especificados no `config.json`).
 
 ## Requisitos
 
@@ -34,10 +34,10 @@ O arquivo `config.json` é a configuração principal que define quais diretóri
         "C:/pessoal/meu_projeto2"
     ],
     "files": [
-        "C:/dev/meu_projeto1/Controllers/UsuarioController.cs",
-        "C:/dev/meu_projeto1/Models/UsuarioModel.cs",
-        "C:/pessoal/meu_projeto2/src/components/Tabela/TabelaComponent.tsx",
-        "C:/pessoal/meu_projeto2/src/components/Tabela/TabelaComponent.scss"
+        "meu_projeto1/Controllers/UsuarioController.cs",
+        "meu_projeto1/Models/UsuarioModel.cs",
+        "meu_projeto2/src/components/Tabela/TabelaComponent.tsx",
+        "meu_projeto2/src/components/Tabela/TabelaComponent.scss"
     ],
     "ignored_dirs": [
         ".git",
@@ -57,11 +57,12 @@ O arquivo `config.json` é a configuração principal que define quais diretóri
 
 1. `projects`:
     - É uma lista de diretórios de projetos cujas árvores de diretórios serão exportadas.
-    - Pode conter um ou mais diretórios.
+    - Deve conter um ou mais diretórios.
 
 2. `files`:
-    - Lista de arquivos específicos cujo conteúdo será exportado. Os caminhos dos arquivos devem estar contidos dentro dos diretórios dos projetos especificados em `projects`.
+    - Lista de arquivos específicos cujo conteúdo será exportado. Os caminhos devem incluir o nome do projeto (como no exemplo acima), e os arquivos devem estar contidos dentro dos diretórios listados em `projects`.
     - Pode conter um ou mais arquivos.
+    - Se essa chave não for fornecida ou estiver vazia, o script apenas gerará a árvore de diretórios dos projetos especificados.
 
 3. `ignored_dirs` (opcional):
     - Lista de diretórios que devem ser ignorados ao exportar a árvore de diretórios. Se essa chave não for especificada, uma lista padrão será usada.
@@ -78,7 +79,7 @@ Você deve modificar o `config.json` para:
 Após configurar o `config.json`, siga os passos abaixo para rodar o **CodeExporterApp**:
 
 1. Abra o terminal ou prompt de comando:
-    - Navegue até o diretório onde o CodeExporterApp está localizado (onde o script code_exporter.py e o arquivo config.json estão).
+    - Navegue até o diretório onde o **CodeExporterApp** está localizado (onde o script `code_exporter.py` e o arquivo `config.json` estão).
 
 2. Execute o script:
     - Execute o script Python no terminal com o seguinte comando:
@@ -90,7 +91,7 @@ python code_exporter.py
 3. Saída:
     - Após a execução do script, ele irá gerar um arquivo chamado `project_export.txt`. Esse arquivo conterá:
         - A **árvore de diretórios** dos projetos especificados no `config.json`.
-        - O **conteúdo dos arquivos** que você listou na chave files do `config.json`.
+        - O **conteúdo dos arquivos** que você listou na chave `files` do `config.json` (se houver arquivos listados).
 
 Verifique o arquivo gerado no mesmo diretório onde o script foi executado.
 
@@ -100,13 +101,13 @@ Verifique o arquivo gerado no mesmo diretório onde o script foi executado.
 
 Esse erro ocorre quando você especifica um arquivo na chave `files` que não está contido dentro de nenhum dos diretórios listados em `projects`. Verifique se o caminho do arquivo está correto e se ele realmente está dentro de um dos projetos especificados.
 
-## 2. Erro: Arquivo `config.json` não encontrado
+### 2. Erro: Arquivo `config.json` não encontrado
 
 Esse erro ocorre porque o script depende do arquivo `config.json` para funcionar corretamente. Certifique-se de que o arquivo está presente na mesma pasta que o script e está devidamente configurado.
 
-## 3. Erro ao analisar o arquivo `config.json`
+### 3. Erro ao analisar o arquivo `config.json`
 
-Esse erro pode ser corrigido revisando o config.json e garantindo que ele esteja bem formatado (todas as chaves e valores estejam corretamente configurados, e que as listas estejam fechadas corretamente).
+Esse erro pode ser corrigido revisando o `config.json` e garantindo que ele esteja bem formatado (todas as chaves e valores estejam corretamente configurados, e que as listas estejam fechadas corretamente).
 
 <br></br>
 **青木**
